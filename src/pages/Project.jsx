@@ -1,58 +1,35 @@
 import React, { useEffect, useState } from "react";
-import GetDataComponent from "../components/GetDataComponent";
+import Image from "../components/Image";
 import { PickerOverlay } from "filestack-react";
-import Loading from "../components/Loading";
-import { getData, postData } from "../API/Api";
 import { useDispatch, useSelector } from "react-redux";
 import { createImage, getImages } from "../features/upload/uploadSlice";
 
 export default function Project() {
     const upload = useSelector((state) => state.upload);
     const dispatch = useDispatch();
+
     /* la api */
     const [isPicker, setIsPicker] = useState(false);
     /* le pone la respuesta de la api */
     const [image, setImage] = useState("");
-    /* la data del backend */
-    const [result, setResult] = useState([]);
-    /* loader */
-    const [getDataLoading, setGetDataLoading] = useState(true);
-    /* otro loader */
-    const [postDataLoading, setpostDataLoading] = useState(false);
-    const [postDatas, setPostDatas] = useState();
     const [title, setTitle] = useState("");
 
     const submitHandler = (e) => {
         e.preventDefault();
-        const datas = { title, image: image.filesUploaded[0].url };
         !image
-            ? alert("Image require")
-            : title.length < 3
-            ? alert("title is too short")
-            : postData({ title, image, setPostDatas, setpostDataLoading });
-        /*     !image
             ? alert("Image require")
             : title.length < 3
             ? alert("title is too short")
             : dispatch(
                   createImage({ title, image: image.filesUploaded[0].url })
-              ); */
+              );
+        setImage("");
+        setTitle("");
     };
 
     useEffect(() => {
-        console.log(`entro acá`);
         dispatch(getImages());
-        getData({ setResult, setGetDataLoading });
-        if (postDatas) {
-            /* limpialos estados */
-            setImage("");
-            setTitle("");
-            getData({ setResult, setGetDataLoading });
-        }
-    }, [postDatas]);
-
-    console.log(title);
-    console.log(image);
+    }, []);
 
     return (
         <div className="bg-blue-50 px-4 flex-colo sm:px-0">
@@ -92,7 +69,7 @@ export default function Project() {
                     type="submit"
                     className="w-full bg-blue-800 py-4 rounded text-white font-bold"
                 >
-                    {postDataLoading ? "Loading..." : "SUBMIT"}
+                    SUBMIT
                 </button>
                 {/* Filestack */}
                 <div className="mt-4 relative">
@@ -114,8 +91,9 @@ export default function Project() {
                     )}
                 </div>
             </form>
-            {getDataLoading && <Loading />}
-            <GetDataComponent result={result} />
+            {upload.images && upload.images.length > 0 && (
+                <Image images={upload.images} />
+            )}
         </div>
     );
 }

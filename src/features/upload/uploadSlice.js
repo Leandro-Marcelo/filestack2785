@@ -4,6 +4,7 @@ import { aGet, aPost } from "../../axios";
 const initialState = {
     images: [],
     getDataLoading: true,
+    getImagesStatus: "loader",
     postDataLoading: false,
     postDatas: false,
 
@@ -32,7 +33,7 @@ export const getImages = createAsyncThunk(
 );
 
 export const createImage = createAsyncThunk(
-    "upload/getImages",
+    "upload/createImage",
     async (datas, { rejectWithValue }) => {
         try {
             const response = await aPost("/", datas);
@@ -83,9 +84,13 @@ const uploadSlice = createSlice({
             };
         },
         [createImage.fulfilled]: (state, action) => {
+            const updatedImages = [action.payload, ...state.images];
+            /*     console.log(JSON.stringify(state.images));
+            console.log(JSON.stringify(action.payload)); */
             return {
                 ...state,
                 postDatas: true,
+                images: updatedImages,
                 postDataLoading: false,
             };
         },
